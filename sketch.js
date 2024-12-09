@@ -50,9 +50,9 @@ class Bucket {
   constructor() {
     this.x = width / 2;
     this.y = height - 20;
-    this.w = 100;
+    this.w = 150;
     this.h = 20;
-    this.speed = 12;
+    this.speed = 20;
   }
 
   show() {
