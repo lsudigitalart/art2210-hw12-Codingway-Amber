@@ -1,106 +1,71 @@
-let bucket;
-let fallingObjects = [];
-let score = 0; 
+// My highest score is 23!
+
+let bucket
+let fallingApples = [] 
+let score = 0
 let gameOver = false;
+let trees
+
+function preload() {
+  trees = loadImage('apple trees.png')
+}
 
 function setup() {
   createCanvas(800, 600);
-  bucket = new Bucket();
+  bucket = { x: width / 2, y: height - 20, w: 150, h: 20, speed: 20 };
 }
 
 function draw() {
-  background(50, 150, 200); 
+  background(50, 150, 200);
+  push()
+  image(trees, 0, 0, 911.4, 607.6)
+  tint(0, 130)
+  image(trees, 0, 0, 911.4, 607.6)
+  pop()
   
-  if (!gameOver) {
-    bucket.show();
-    bucket.move();
-
-    if (frameCount % 30 === 0) {
-      fallingObjects.push(new FallingObject());
-    }
-
-    for (let i = fallingObjects.length - 1; i >= 0; i--) {
-      fallingObjects[i].show();
-      fallingObjects[i].update();
-
-      if (fallingObjects[i].hits(bucket)) {
-        score++;
-        fallingObjects.splice(i, 1); 
-      } else if (fallingObjects[i].y > height) {
-        gameOver = true;
-      }
-    }
-
-    fill(255);
-    textSize(24);
-    console.log(`Score position: (25, 50)`);
-    text(`Score: ${score}`, 25, 50);
-  } else {
+  if (gameOver) {
     fill(255);
     textSize(48);
     textAlign(CENTER);
     text('Game Over!', width / 2, height / 2);
     textSize(24);
-    text(`Final Score: ${score}`, width / 2, height / 2 + 50);
+    text('Final Score: ' + score, width / 2, height / 2 + 50);
     text('Press R to Restart', width / 2, height / 2 + 100);
-  }
-}
-
-class Bucket {
-  constructor() {
-    this.x = width / 2;
-    this.y = height - 20;
-    this.w = 150;
-    this.h = 20;
-    this.speed = 20;
+    return;
   }
 
-  show() {
-    fill(255, 200, 0);
-    rect(this.x, this.y, this.w, this.h);
-  }
+  fill(255, 208, 50);
+  rect(bucket.x, bucket.y, bucket.w, bucket.h);
 
-  move() {
-    if (keyIsDown(LEFT_ARROW) && this.x > 0) {
-      this.x -= this.speed;
+  if (keyIsDown(LEFT_ARROW) && bucket.x > 0) bucket.x -= bucket.speed;
+  if (keyIsDown(RIGHT_ARROW) && bucket.x < width - bucket.w) bucket.x += bucket.speed;
+
+  if (frameCount % 30 === 0) fallingApples.push({ x: random(width / 4, (3 * width) / 4), y: 0, size: 20, speed: random(2, 5) });
+
+  for (let i = fallingApples.length - 1; i >= 0; i--) {
+    let obj = fallingApples[i];
+    fill(255, 18, 73);
+    ellipse(obj.x, obj.y, obj.size);
+    obj.y += obj.speed;
+
+    if (obj.y + obj.size / 2 > bucket.y && obj.x > bucket.x && obj.x < bucket.x + bucket.w) {
+      score += 1;
+      fallingApples.splice(i, 1);
+    } else if (obj.y > height) {
+      gameOver = true;
     }
-    if (keyIsDown(RIGHT_ARROW) && this.x < width - this.w) {
-      this.x += this.speed;
-    }
-  }
-}
-
-class FallingObject {
-  constructor() {
-    this.x = random(width / 4, (3 * width) / 4); 
-    this.y = 0;
-    this.size = 20;
-    this.speed = random(2, 5);
   }
 
-  show() {
-    fill(200, 50, 50);
-    ellipse(this.x, this.y, this.size);
-  }
-
-  update() {
-    this.y += this.speed;
-  }
-
-  hits(bucket) {
-    return (
-      this.y + this.size / 2 > bucket.y &&
-      this.x > bucket.x &&
-      this.x < bucket.x + bucket.w
-    );
-  }
+  fill(255);
+  textSize(24);
+  text('Score: ' + score, 25, 50);
 }
 
 function keyPressed() {
-  if (key === 'r' || key === 'R') {
+  if ((key === 'r' || key === 'R') && gameOver) {
     gameOver = false;
     score = 0;
-    fallingObjects = [];
-    bucket.x = width / 2; 
+    fallingApples = [];
+    bucket.x = width / 2;
   }
 }
