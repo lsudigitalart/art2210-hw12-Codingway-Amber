@@ -1,4 +1,4 @@
-// My highest score is 23!
+// My highest score is 34!
 
 let bucket
 let fallingApples = [] 
